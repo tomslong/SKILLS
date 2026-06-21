@@ -48,6 +48,8 @@ def test_multiple_sources_dedup():
 
 def test_deduplicate_with_known_near_duplicates():
     """verify deduplicate merges near-duplicate titles and no remaining pair exceeds threshold."""
+    import sys
+    sys.path.insert(0, str(TOOL_DIR))
     from paper_search import deduplicate, title_similarity
     papers = [
         {"title": "Attention Is All You Need", "abstract": "", "source": "arxiv"},
