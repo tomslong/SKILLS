@@ -7,7 +7,7 @@ Sources:
     semantic_scholar  - Semantic Scholar API (primary, free, embeddings + citation graph)
     arxiv            - arXiv API (cs.CV, cs.CL, cs.AI, cs.LG)
     dblp             - DBLP API (author/venue search)
-    google_scholar   - Google Scholar (fallback, rate-limited, may require scraping)
+    google_scholar   - Google Scholar (planned, not yet implemented)
 
 Output: JSON array of paper dicts with keys:
     title, authors (list), year, venue, doi, arxiv_id, abstract, url, source
@@ -19,7 +19,6 @@ import sys
 import time
 from difflib import SequenceMatcher
 from typing import Optional
-from urllib.parse import quote, urlencode
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 try:
@@ -203,6 +202,9 @@ def search_papers(query: str, sources: Optional[list[str]] = None,
                 print(f"Warning: {src} search failed: {e}", file=sys.stderr)
 
     all_papers = deduplicate(all_papers)
+
+    SOURCE_PRIORITY = {"semantic_scholar": 0, "arxiv": 1, "dblp": 2}
+    all_papers.sort(key=lambda p: SOURCE_PRIORITY.get(p["source"], 99))
     return all_papers[:limit]
 
 

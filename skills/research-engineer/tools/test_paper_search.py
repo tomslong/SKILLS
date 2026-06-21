@@ -46,6 +46,30 @@ def test_multiple_sources_dedup():
                 assert False, f"Possible duplicate: '{t1}' vs '{t2}'"
 
 
+def test_deduplicate_with_known_near_duplicates():
+    """verify deduplicate merges near-duplicate titles and no remaining pair exceeds threshold."""
+    from paper_search import deduplicate, title_similarity
+    papers = [
+        {"title": "Attention Is All You Need", "abstract": "", "source": "arxiv"},
+        {"title": "Attention is All you Need!!", "abstract": "The dominant sequence transduction models...", "source": "semantic_scholar"},
+        {"title": "BERT: Pre-training of Deep Bidirectional Transformers", "abstract": "", "source": "arxiv"},
+        {"title": "Attention Is All You Need", "abstract": "extra abstract text here", "source": "dblp"},
+    ]
+    result = deduplicate(papers, threshold=0.85)
+    # "Attention Is All You Need" variants should merge into 1
+    assert len(result) <= 3, f"Expected at most 3 papers after dedup, got {len(result)}"
+    # Verify no remaining pair exceeds threshold
+    for i, a in enumerate(result):
+        for j, b in enumerate(result):
+            if i < j:
+                sim = title_similarity(a["title"], b["title"])
+                assert sim < 0.85, f"Remaining papers too similar ({sim:.3f}): '{a['title']}' vs '{b['title']}'"
+    # The kept entry should have the richer abstract
+    attn = [p for p in result if "attention" in p["title"].lower()]
+    assert len(attn) == 1, f"Attention paper should be deduplicated to 1 entry, got {len(attn)}"
+    assert "transduction" in attn[0]["abstract"].lower(), "Should keep the richer abstract"
+
+
 def test_limit_respected():
     """Result count does not exceed limit."""
     papers = run_search("neural network", limit=3)
