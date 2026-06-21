@@ -7,7 +7,17 @@ description: Use when solving AI research problems (LLMs, computer vision, image
 
 ## Overview
 
-Turn a real-world AI problem into a high-quality research + engineering deliverable. Follow an adaptive pipeline: formalize the problem → search academic papers → score relevance → decide whether to implement from a paper, synthesize multiple papers, or derive from first principles → implement and validate → produce a final report.
+## Output Convention
+
+All intermediate and final artifacts live in `research-output/` at the project root. Create this directory at the start of Phase 1. Each phase writes its output there:
+- `research-output/problem_spec.md` — Phase 1
+- `research-output/lit_matrix.md` — Phase 2
+- `research-output/design_doc.md` — Phase 3
+- `research-output/experiments.db` — Phase 4 (experiment tracker)
+- `research-output/discussion.md` — Gate 2 analysis
+- `research-output/report.md` — Phase 5 final report
+
+---
 
 ## Core Pipeline
 
@@ -130,18 +140,18 @@ User approves (→ Phase 5), requests revisions, or abandons.
 
 ### Phase 5: Final Report
 
-Run `tools/report_gen.py` to compile all artifacts into a unified report:
+All artifacts live in `research-output/`. Run `tools/report_gen.py` to compile:
 
 | Section | Source |
 |---------|--------|
-| Problem statement | Phase 1 formalization |
-| Literature review | Phase 2 paper matrix (condensed) |
-| Method | Phase 3 design doc |
-| Experiments | Phase 4 experiment tracker exports |
-| Results & discussion | Gate 2 analysis + human feedback |
+| Problem statement | research-output/problem_spec.md |
+| Literature review | research-output/lit_matrix.md |
+| Method | research-output/design_doc.md |
+| Experiments | research-output/experiments.json (from experiment_tracker) |
+| Results & discussion | research-output/discussion.md |
 | Code delivery | Paths to final implementation, reproduction commands |
 
-Markdown by default. Use `--format latex` for paper-ready output.
+Output: `research-output/report.md` (default) or LaTeX via `--format latex`.
 
 ## Error Handling
 
