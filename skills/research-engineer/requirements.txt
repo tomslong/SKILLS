@@ -1,0 +1,4 @@
+# skills/research-engineer/requirements.txt
+requests>=2.28
+PyMuPDF>=1.23.0
+sentence-transformers>=2.2.0
